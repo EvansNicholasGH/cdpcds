@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract cdpcds {
-
+    //THIS IS AN ADDITION
     using SafeMath for uint256;
 
     struct CDS {
@@ -135,6 +135,6 @@ contract cdpcds {
             return(false);
         }
     }
-    
+
 
 }
