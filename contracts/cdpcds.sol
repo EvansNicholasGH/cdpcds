@@ -102,7 +102,7 @@ contract cdpcds {
                 allCDSs[_ID].makerCollateral.sub(earlyTermFee);
                 allCDSs[_ID].takerCollateral.add(earlyTermFee);
                 uint makerPayout = allCDSs[_ID].makerCollateral;
-                allCDSs[_ID].makerCollateral=0;
+                allCDSs[_ID].makerCollateral = 0;
                 allCDSs[_ID].maker.transfer(makerPayout);
             }
         }
@@ -129,11 +129,12 @@ contract cdpcds {
             }
             return(true);            
         }
-        else{
+        else{//Fix Later
             allCDSs[_ID].maker.transfer(owed);
             allCDSs[_ID].payed.add(owed);
             return(false);
         }
     }
+    
 
 }
