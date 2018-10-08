@@ -31,7 +31,7 @@ contract cdpcds {
     function makeCDSOrder(uint _premium)public payable {
         require(msg.value >= 1000000000000000);
         uint collateral = msg.value;
-        allCDSs[currentID] = CDS(msg.sender, 0x0, collateral, 0, _premium, 0, currentID, 0, 0, 7 days,now.add(90 days),2773);
+        allCDSs[currentID] = CDS(msg.sender, 0x0, collateral, 0, _premium, 0, currentID, 0, 0, 0, 7 days,now.add(90 days),2773);
         currentID.add(1);
     }
     //HELPER SHOW INFO FUNCTION::
