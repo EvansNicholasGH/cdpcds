@@ -46,7 +46,7 @@ contract cdpcds {
         require(allCDSs[_ID].status==0);
         allCDSs[_ID].takerCollateral.add(msg.value);
         allCDSs[_ID].filledTime = block.timestamp;
-        allCDSs[_ID].status=1
+        allCDSs[_ID].status=1;
         allCDSs[_ID].taker = msg.sender;
         return true;
     }
