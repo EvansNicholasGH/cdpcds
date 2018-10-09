@@ -11,6 +11,7 @@ contract testing{
        uint filledTime;
        uint paid;
        uint payPeriod;
+       uint status;
    }
    address cont = this;
 
