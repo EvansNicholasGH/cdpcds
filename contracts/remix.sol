@@ -75,4 +75,14 @@ contract testing{
 
    }
 
+    function reportLiquidation(uint _ID)public returns(bool){
+        uint collateral = CDSs[_ID].makerCollateral;
+        CDSs[_ID].takerCollateral += collateral;
+        CDSs[_ID].makerCollateral = 0;
+        uint takerPayout = CDSs[_ID].takerCollateral;
+        CDSs[_ID].takerCollateral = 0;
+        CDSs[_ID].taker.transfer(takerPayout);
+        CDSs[_ID].status=2;
+    }
+
 }
