@@ -5,6 +5,8 @@ import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
 contract cdpcds {
     //THIS IS AN ADDITION
     using SafeMath for uint256;
+    
+    address cont = this;
 
     struct CDS {
         address maker;
@@ -36,9 +38,9 @@ contract cdpcds {
     }
     //HELPER SHOW INFO FUNCTION::
 
-    function getCDS(uint _ID)public view returns(address, address, uint, uint ){
-        return (allCDSs[_ID].maker,allCDSs[_ID].taker, allCDSs[_ID].makerCollateral, allCDSs[_ID].takerCollateral);
-    }
+    function getInfo(uint _ID) public view returns (uint, uint, uint, uint, uint){
+       return(allCDSs[_ID].makerCollateral,allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
+   }
     
     //END HLPERS
     function fillCDSOrder(uint _ID)public payable returns (bool){
@@ -87,7 +89,9 @@ contract cdpcds {
     }
 
     function requestPremium(uint _ID)public returns(bool){
-        uint owed = _calculateOwed(_ID);
+        //uint owed = _calculateOwed(_ID);
+        //add closed case
+        uint owed = allCDSs[_ID].premium;
         uint collateral = allCDSs[_ID].takerCollateral;
 
         if(owed==0) return(false);
@@ -105,6 +109,7 @@ contract cdpcds {
     }
 
     function reportLiquidation(uint _ID)public returns(bool){
+        //add closed case
         uint collateral = allCDSs[_ID].makerCollateral;
         allCDSs[_ID].takerCollateral = collateral.add(allCDSs[_ID].takerCollateral);
         allCDSs[_ID].makerCollateral = 0;
