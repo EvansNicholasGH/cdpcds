@@ -32,7 +32,7 @@ contract cdpcds {
         require(msg.value >= 1000000000000000);
         uint collateral = msg.value;
         allCDSs[currentID] = CDS(msg.sender, 0x0, collateral, 0, _premium, 0, currentID, 0, 0, 0, 7 days,now.add(90 days),2773);
-        currentID.add(1);
+        currentID = currentID.add(1);
     }
     //HELPER SHOW INFO FUNCTION::
 
@@ -44,7 +44,7 @@ contract cdpcds {
     function fillCDSOrder(uint _ID)public payable returns (bool){
         require (msg.value >= allCDSs[_ID].premium);
         require(allCDSs[_ID].status==0);
-        allCDSs[_ID].takerCollateral.add(msg.value);
+        allCDSs[_ID].takerCollateral = allCDSs[_ID].takerCollateral.add(msg.value);
         allCDSs[_ID].filledTime = block.timestamp;
         allCDSs[_ID].status = 1;
         allCDSs[_ID].taker = msg.sender;
@@ -73,8 +73,8 @@ contract cdpcds {
         bool underCollateral = requestPremium(_ID); //requestPremium requires no outstanding balance. stack is cleared and state is reversted. need another solution       
         if(!underCollateral && (block.timestamp < allCDSs[_ID].expiration)){
             uint earlyTermFee = (allCDSs[_ID].makerCollateral.mul(13)).div(100);
-            allCDSs[_ID].makerCollateral.sub(earlyTermFee);
-            allCDSs[_ID].takerCollateral.add(earlyTermFee);                              
+            allCDSs[_ID].makerCollateral = allCDSs[_ID].makerCollateral.sub(earlyTermFee);
+            allCDSs[_ID].takerCollateral = allCDSs[_ID].takerCollateral.add(earlyTermFee);                              
         }
         //msg.sender.transfer(allCDSs[_ID].expirationBounty);
         allCDSs[_ID].status=2;
@@ -97,8 +97,8 @@ contract cdpcds {
             return(true);			             
         }
         if(owed <= collateral){//Fix Later
-            allCDSs[_ID].takerCollateral.sub(owed);
-            allCDSs[_ID].payed.add(owed);
+            allCDSs[_ID].takerCollateral = allCDSs[_ID].takerCollateral.sub(owed);
+            allCDSs[_ID].payed = allCDSs[_ID].payed.add(owed);
             allCDSs[_ID].maker.transfer(owed);            
             return(false);
         }
