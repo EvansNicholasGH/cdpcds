@@ -32,15 +32,15 @@ contract testing{
        CDSs[_ID].takerCollateral = msg.value;
    }
 
-   function pay(uint _ID)public {
-       require(msg.sender == CDSs[_ID].taker);
-       uint mCol = CDSs[_ID].makerCollateral;
-       CDSs[_ID].makerCollateral = 0;
-       CDSs[_ID].taker.transfer(mCol);
-       uint tCol = CDSs[_ID].takerCollateral;
-       CDSs[_ID].takerCollateral = 0;
-       CDSs[_ID].taker.transfer(tCol);
-   }
+    function reportLiquidation(uint _ID)public returns(bool){
+        uint collateral = CDSs[_ID].makerCollateral;
+        CDSs[_ID].takerCollateral += collateral;
+        CDSs[_ID].makerCollateral = 0;
+        uint takerPayout = CDSs[_ID].takerCollateral;
+        CDSs[_ID].takerCollateral = 0;
+        CDSs[_ID].taker.transfer(takerPayout);
+        CDSs[_ID].status=2;
+    }
 
    function getInfo(uint _ID) public view returns (uint, uint, uint, uint, uint){
        return(CDSs[_ID].makerCollateral,CDSs[_ID].takerCollateral, CDSs[_ID].payment, CDSs[_ID].paid, cont.balance);
@@ -76,15 +76,5 @@ contract testing{
        }
 
    }
-
-    function reportLiquidation(uint _ID)public returns(bool){
-        uint collateral = CDSs[_ID].makerCollateral;
-        CDSs[_ID].takerCollateral += collateral;
-        CDSs[_ID].makerCollateral = 0;
-        uint takerPayout = CDSs[_ID].takerCollateral;
-        CDSs[_ID].takerCollateral = 0;
-        CDSs[_ID].taker.transfer(takerPayout);
-        CDSs[_ID].status=2;
-    }
 
 }
