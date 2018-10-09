@@ -11,6 +11,7 @@ contract testing{
        uint filledTime;
        uint paid;
        uint payPeriod;
+       //0=unmatched, 1=matched+open, 2=closed
        uint status;
    }
    address cont = this;
@@ -20,7 +21,7 @@ contract testing{
 
    function make(uint _payment)public payable {
        require(msg.value > 1e17);
-       CDSs[currentID] = cds(msg.sender, 0x0, msg.value, 0, _payment,  0, 0, 7 days);
+       CDSs[currentID] = cds(msg.sender, 0x0, msg.value, 0, _payment,  0, 0, 7 days,0);
        currentID += 1;
    }
 
