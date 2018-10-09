@@ -36,8 +36,8 @@ contract cdpcds {
     }
     //HELPER SHOW INFO FUNCTION::
 
-    function getCDS(uint _ID)public view returns(address, uint, uint ){
-        return (allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].takerCollateral);
+    function getCDS(uint _ID)public view returns(address, address, uint, uint ){
+        return (allCDSs[_ID].maker,allCDSs[_ID].taker, allCDSs[_ID].makerCollateral, allCDSs[_ID].takerCollateral);
     }
     
     //END HLPERS
@@ -46,7 +46,7 @@ contract cdpcds {
         require(allCDSs[_ID].status==0);
         allCDSs[_ID].takerCollateral.add(msg.value);
         allCDSs[_ID].filledTime = block.timestamp;
-        allCDSs[_ID].status=1;
+        allCDSs[_ID].status = 1;
         allCDSs[_ID].taker = msg.sender;
         return true;
     }
