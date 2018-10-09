@@ -1,3 +1,4 @@
+// solium-disable linebreak-style
 pragma solidity ^0.4.24;
 
 import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -31,7 +32,7 @@ contract cdpcds {
     uint currentID = 0; 
    
     function makeCDSOrder(uint _premium)public payable {
-        require(msg.value >= 1000000000000000);
+        require(msg.value >= 1e15);
         uint collateral = msg.value;
         allCDSs[currentID] = CDS(msg.sender, 0x0, collateral, 0, _premium, 0, currentID, 0, 0, 0, 7 days,now.add(90 days),2773);
         currentID = currentID.add(1);
@@ -39,8 +40,8 @@ contract cdpcds {
     //HELPER SHOW INFO FUNCTION::
 
     function getInfo(uint _ID) public view returns (uint, uint, uint, uint, uint){
-       return(allCDSs[_ID].makerCollateral,allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
-   }
+        return(allCDSs[_ID].makerCollateral,allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
+    }
     
     //END HLPERS
     function fillCDSOrder(uint _ID)public payable returns (bool){
