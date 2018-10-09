@@ -106,13 +106,14 @@ contract cdpcds {
 
     function reportLiquidation(uint _ID)public returns(bool){
         uint collateral = allCDSs[_ID].makerCollateral;
-        allCDSs[_ID].takerCollateral.add(collateral);
+        allCDSs[_ID].takerCollateral = collateral.add(allCDSs[_ID].takerCollateral);
         allCDSs[_ID].makerCollateral = 0;
         uint takerPayout = allCDSs[_ID].takerCollateral;
         allCDSs[_ID].takerCollateral = 0;
         allCDSs[_ID].taker.transfer(takerPayout);
         allCDSs[_ID].status=2;
     }
+    
 
     /* function addMakerCollateral(uint _ID)public payable returns (bool){
         require(msg.value >=0);
