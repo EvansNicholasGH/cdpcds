@@ -64,11 +64,11 @@ contract cdpcds {
         return true;        
     }
     
-    function _calculateOwed(uint _ID, uint _testDate)internal view returns(uint){
+    function _calculateOwed(uint _ID, uint _testDate)public view returns(uint){
         uint current = _testDate==0 ? block.timestamp : _testDate;
         uint earlier = current >= allCDSs[_ID].expiration ? allCDSs[_ID].expiration : current;
         uint delta = earlier.sub(allCDSs[_ID].filledTime);
-        uint owedPayments = uint(delta).div(uint(allCDSs[_ID].payPeriod).mul(86400));
+        uint owedPayments = delta.div(allCDSs[_ID].payPeriod);
         uint outstanding = (owedPayments.mul(allCDSs[_ID].premium)).sub(allCDSs[_ID].payed);
         return(outstanding);
     }
@@ -81,7 +81,7 @@ contract cdpcds {
     function close(uint _ID, uint _testDate)public {
         require(msg.sender == allCDSs[_ID].maker);
         uint current = _testDate==0 ? block.timestamp : _testDate;
-        bool underCollateral = requestPremium(_ID); //requestPremium requires no outstanding balance. stack is cleared and state is reversted. need another solution       
+        bool underCollateral = requestPremium(_ID, _testDate); //requestPremium requires no outstanding balance. stack is cleared and state is reversted. need another solution       
         if(!underCollateral && (current < allCDSs[_ID].expiration)){
             uint earlyTermFee = (allCDSs[_ID].makerCollateral.mul(13)).div(100);
             allCDSs[_ID].makerCollateral = allCDSs[_ID].makerCollateral.sub(earlyTermFee);
@@ -97,10 +97,10 @@ contract cdpcds {
         allCDSs[_ID].maker.transfer(makerPayout);
     }
 
-    function requestPremium(uint _ID)public returns(bool){
-        //uint owed = _calculateOwed(_ID);
+    function requestPremium(uint _ID, uint _testDate)public returns(bool){
+        uint owed = _calculateOwed(_ID, _testDate);
         //add closed case
-        uint owed = allCDSs[_ID].premium;
+        //uint owed = allCDSs[_ID].premium;
         uint collateral = allCDSs[_ID].takerCollateral;
 
         if(owed==0) return(false);
