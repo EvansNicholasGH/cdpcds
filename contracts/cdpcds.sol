@@ -107,6 +107,11 @@ contract cdpcds {
         if(owed > collateral){            
             allCDSs[_ID].takerCollateral = 0;
             if(collateral>0) allCDSs[_ID].maker.transfer(collateral);
+            allCDSs[_ID].status=2;
+            uint makerPayout = (allCDSs[_ID].makerCollateral).add(allCDSs[_ID].takerCollateral);
+            allCDSs[_ID].takerCollateral = 0;
+            allCDSs[_ID].makerCollateral = 0;
+            allCDSs[_ID].maker.transfer(makerPayout);
             return(true);			             
         }
         if(owed <= collateral){//Fix Later
