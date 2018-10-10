@@ -8,6 +8,7 @@ contract cdpcds {
     using SafeMath for uint256;
     
     address cont = this;
+    uint testDate = block.timestamp;
 
     struct CDS {
         address maker;
@@ -44,11 +45,11 @@ contract cdpcds {
     }
     
     //END HLPERS
-    function fillCDSOrder(uint _ID)public payable returns (bool){
-        require (msg.value >= allCDSs[_ID].premium);
-        require(allCDSs[_ID].status==0);
+    function fillCDSOrder(uint _ID, uint _testDate)public payable returns (bool){
+        require (msg.value >= allCDSs[_ID].premium && allCDSs[_ID].status==0);
+        uint current = _testDate==0 ? block.timestamp : _testDate;
         allCDSs[_ID].takerCollateral = allCDSs[_ID].takerCollateral.add(msg.value);
-        allCDSs[_ID].filledTime = block.timestamp;
+        allCDSs[_ID].filledTime = current;
         allCDSs[_ID].status = 1;
         allCDSs[_ID].taker = msg.sender;
         return true;
@@ -63,18 +64,25 @@ contract cdpcds {
         return true;        
     }
     
-    function _calculateOwed(uint _ID)internal view returns(uint){
-        uint current = block.timestamp > allCDSs[_ID].expiration ? allCDSs[_ID].expiration : block.timestamp;
-        uint delta = current.sub(allCDSs[_ID].filledTime);
+    function _calculateOwed(uint _ID, uint _testDate)internal view returns(uint){
+        uint current = _testDate==0 ? block.timestamp : _testDate;
+        uint earlier = current >= allCDSs[_ID].expiration ? allCDSs[_ID].expiration : current;
+        uint delta = earlier.sub(allCDSs[_ID].filledTime);
         uint owedPayments = uint(delta).div(uint(allCDSs[_ID].payPeriod).mul(86400));
         uint outstanding = (owedPayments.mul(allCDSs[_ID].premium)).sub(allCDSs[_ID].payed);
-        return outstanding;
+        return(outstanding);
     }
 
-    function close(uint _ID)public {
+    function setSetTestDate(uint newDate)public returns(bool){
+        testDate = newDate;
+        return(true);
+    }
+
+    function close(uint _ID, uint _testDate)public {
         require(msg.sender == allCDSs[_ID].maker);
+        uint current = _testDate==0 ? block.timestamp : _testDate;
         bool underCollateral = requestPremium(_ID); //requestPremium requires no outstanding balance. stack is cleared and state is reversted. need another solution       
-        if(!underCollateral && (block.timestamp < allCDSs[_ID].expiration)){
+        if(!underCollateral && (current < allCDSs[_ID].expiration)){
             uint earlyTermFee = (allCDSs[_ID].makerCollateral.mul(13)).div(100);
             allCDSs[_ID].makerCollateral = allCDSs[_ID].makerCollateral.sub(earlyTermFee);
             allCDSs[_ID].takerCollateral = allCDSs[_ID].takerCollateral.add(earlyTermFee);                              
