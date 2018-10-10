@@ -7,6 +7,6 @@ contract TestCds{
     function testInitilBalance() public{
         cdpcds cdp = cdpcds(DeployedAddresses.cdpcds());
         uint expected = 0;
-        Assert.equal(address(cdp).balance, expected, "Owner should have 10000 MetaCoin initially");
+        Assert.equal(address(cdp).balance, expected, "contract balance expected 0");
     }
 }
