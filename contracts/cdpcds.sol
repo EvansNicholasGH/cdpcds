@@ -39,14 +39,13 @@ contract cdpcds {
         currentID = currentID.add(1);
     }
     //HELPER SHOW INFO FUNCTION::
-
-    function getInfo(uint _ID) public view returns (string, uint, uint, uint, uint, uint){
-        return("mkrCol,tkrCol,premium, paid, status",allCDSs[_ID].makerCollateral,allCDSs[_ID].takerCollateral,allCDSs[_ID].premium, allCDSs[_ID].payed,allCDSs[_ID].status);
-    }
     
-    function getMkrTkr(uint _ID) public view returns (address,address){
-        return(allCDSs[_ID].maker,allCDSs[_ID].taker);
+    function getInfo(uint _ID) public view returns (address, uint, address, uint, uint, uint, uint){
+        return(allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].taker, allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
     }
+    //for testing...
+    function getCollateralBalance(address _addr)public view returns(uint){
+        return collateralBalances[_addr];
     
     //END HLPERS
     function fillCDSOrder(uint _ID, uint _testDate)public payable returns (bool){
