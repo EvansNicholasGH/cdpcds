@@ -53,7 +53,7 @@ contract TestCds{
 //requestPremium(0,1539759600)
 //close(0,1541487600)
 
-//test3
+//test4
 //a0 = web3.eth.accounts[0]
 //a1 = web3.eth.accounts[1]
 //a2 = web3.eth.accounts[2]
