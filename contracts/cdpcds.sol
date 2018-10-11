@@ -42,6 +42,7 @@ contract cdpcds {
     }
     //HELPER SHOW INFO FUNCTION::
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
     function getInfo(uint _ID) public view returns (address, uint, address, uint, uint, uint, uint){
@@ -60,6 +61,9 @@ contract cdpcds {
 >>>>>>> 44ef0ba26072b42aba2af2ce73b20b89699b7d9f
 =======
     
+=======
+
+>>>>>>> 928182a08b433068a3ccfb42e660434f53ac4258
     function getInfo(uint _ID) public view returns (address, uint, address, uint, uint, uint, uint){
         return(allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].taker, allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
 >>>>>>> b184f85796c96ebc278246322f49e493010cef4f
@@ -67,6 +71,7 @@ contract cdpcds {
     //for testing...
     function getCollateralBalance(address _addr)public view returns(uint){
         return collateralBalances[_addr];
+    }
     
     //END HLPERS
     function fillCDSOrder(uint _ID, uint _testDate)public payable returns (bool){
@@ -194,10 +199,16 @@ contract cdpcds {
         allCDSs[_ID].takerCollateral.add(msg.value);
     } */
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     //TODO: finish Collateral balance tracking for testing (removed or added where apropreate)
 
 }
 =======
+=======
+
+    //TODO: finish Collateral balance tracking for testing (removed or added where apropreate)
+
+>>>>>>> 928182a08b433068a3ccfb42e660434f53ac4258
 }
 >>>>>>> b184f85796c96ebc278246322f49e493010cef4f
