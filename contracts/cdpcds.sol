@@ -29,6 +29,7 @@ contract cdpcds {
     }
 
     mapping(uint => CDS)allCDSs;
+    mapping(address => uint)collateralBalances; // for testing purposes
 
     uint currentID = 0; 
    
@@ -37,15 +38,17 @@ contract cdpcds {
         uint collateral = msg.value;
         allCDSs[currentID] = CDS(msg.sender, 0x0, collateral, 0, _premium, 0, currentID, 0, 0, 0, 7 days,now.add(35 days),2773);
         currentID = currentID.add(1);
+        collateralBalances[msg.sender] = collateralBalances[msg.sender].add(msg.value);
     }
     //HELPER SHOW INFO FUNCTION::
-    
+
     function getInfo(uint _ID) public view returns (address, uint, address, uint, uint, uint, uint){
         return(allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].taker, allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
     }
     //for testing...
     function getCollateralBalance(address _addr)public view returns(uint){
         return collateralBalances[_addr];
+    }
     
     //END HLPERS
     function fillCDSOrder(uint _ID, uint _testDate)public payable returns (bool){
@@ -55,6 +58,7 @@ contract cdpcds {
         allCDSs[_ID].filledTime = current;
         allCDSs[_ID].status = 1;
         allCDSs[_ID].taker = msg.sender;
+        collateralBalances[msg.sender] =  collateralBalances[msg.sender].add(msg.value);
         return true;
     }
 
@@ -81,7 +85,7 @@ contract cdpcds {
         return(true);
     }
 
-    function close(uint _ID, uint _testDate)public {
+    function close(uint _ID, uint _testDate)public {//
         require(msg.sender == allCDSs[_ID].maker);
         uint current = _testDate==0 ? block.timestamp : _testDate;
         bool underCollateral = requestPremium(_ID, _testDate); //requestPremium requires no outstanding balance. stack is cleared and state is reversted. need another solution
@@ -171,4 +175,7 @@ contract cdpcds {
         require(_to == allCDSs[_ID].taker);
         allCDSs[_ID].takerCollateral.add(msg.value);
     } */
+
+    //TODO: finish Collateral balance tracking for testing (removed or added where apropreate)
+
 }
