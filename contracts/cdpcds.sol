@@ -85,7 +85,8 @@ contract cdpcds {
     function close(uint _ID, uint _testDate)public {
         require(msg.sender == allCDSs[_ID].maker);
         uint current = _testDate==0 ? block.timestamp : _testDate;
-        bool underCollateral = requestPremium(_ID, _testDate); //requestPremium requires no outstanding balance. stack is cleared and state is reversted. need another solution       
+        bool underCollateral = requestPremium(_ID, _testDate); //requestPremium requires no outstanding balance. stack is cleared and state is reversted. need another solution
+        require(allCDSs[_ID].status<2);
         if(!underCollateral && (current < allCDSs[_ID].expiration)){
             uint earlyTermFee = (allCDSs[_ID].makerCollateral.mul(13)).div(100);
             allCDSs[_ID].makerCollateral = allCDSs[_ID].makerCollateral.sub(earlyTermFee);
@@ -106,12 +107,14 @@ contract cdpcds {
         //add closed case
         //uint owed = allCDSs[_ID].premium;
         uint collateral = allCDSs[_ID].takerCollateral;
-
+        uint makerPayout=0;
+        uint takerPayout=0;
+        
         if(owed==0) return(false);
         if(owed > collateral){
             allCDSs[_ID].status=2;
             allCDSs[_ID].takerCollateral = 0;
-            uint makerPayout = (allCDSs[_ID].makerCollateral).add(collateral);
+            makerPayout = (allCDSs[_ID].makerCollateral).add(collateral);
             allCDSs[_ID].makerCollateral = 0;
             allCDSs[_ID].maker.transfer(makerPayout);
             allCDSs[_ID].payed = allCDSs[_ID].payed.add(makerPayout);
@@ -120,7 +123,16 @@ contract cdpcds {
         if(owed <= collateral){//Fix Later
             allCDSs[_ID].takerCollateral = allCDSs[_ID].takerCollateral.sub(owed);
             allCDSs[_ID].payed = allCDSs[_ID].payed.add(owed);
-            allCDSs[_ID].maker.transfer(owed);            
+            allCDSs[_ID].maker.transfer(owed);
+            if(_testDate>=allCDSs[_ID].expiration) {
+                allCDSs[_ID].status=2;
+                makerPayout = allCDSs[_ID].makerCollateral;
+                takerPayout = allCDSs[_ID].takerCollateral;
+                allCDSs[_ID].makerCollateral=0;
+                allCDSs[_ID].takerCollateral=0;
+                allCDSs[_ID].maker.transfer(makerPayout);
+                allCDSs[_ID].taker.transfer(takerPayout);
+            }
             return(false);
         }
     }
