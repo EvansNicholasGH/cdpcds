@@ -35,13 +35,17 @@ contract cdpcds {
     function makeCDSOrder(uint _premium)public payable {
         require(msg.value >= 1e15);
         uint collateral = msg.value;
-        allCDSs[currentID] = CDS(msg.sender, 0x0, collateral, 0, _premium, 0, currentID, 0, 0, 0, 7 days,now.add(90 days),2773);
+        allCDSs[currentID] = CDS(msg.sender, 0x0, collateral, 0, _premium, 0, currentID, 0, 0, 0, 7 days,now.add(28 days),2773);
         currentID = currentID.add(1);
     }
     //HELPER SHOW INFO FUNCTION::
 
-    function getInfo(uint _ID) public view returns (uint, uint, uint, uint, uint){
-        return(allCDSs[_ID].makerCollateral,allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
+    function getInfo(uint _ID) public view returns (string, uint, uint, uint, uint, uint){
+        return("mkrCol,tkrCol,premium, paid, status",allCDSs[_ID].makerCollateral,allCDSs[_ID].takerCollateral,allCDSs[_ID].premium, allCDSs[_ID].payed,allCDSs[_ID].status);
+    }
+    
+    function getMkrTkr(uint _ID) public view returns (address,address){
+        return(allCDSs[_ID].maker,allCDSs[_ID].taker);
     }
     
     //END HLPERS
@@ -73,8 +77,8 @@ contract cdpcds {
         return(outstanding);
     }
 
-    function setSetTestDate(uint newDate)public returns(bool){
-        testDate = newDate;
+    function setSetExpirationDate(uint _ID,uint newDate)public returns(bool){
+        allCDSs[_ID].expiration = newDate;
         return(true);
     }
 
