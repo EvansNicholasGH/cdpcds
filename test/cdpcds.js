@@ -6,9 +6,11 @@ let a0, a1, a2, a3, a4;//account variables also global
 //TEST 1
 contract('Testing CDPCDS', async (accounts) => {
 
+    //README:
+
     //it statmements define single test. should end with assertion/s. 
-    //first one asdigns deployed contract instance to 'instance' variable, and acounts to their respective variables.
-    //it calls makeCDSOrder from acc1 with 10 ether as colateral.
+    //first one assigns deployed contract instance to 'instance' variable, and acounts to their respective variables.
+    //it calls makeCDSOrder from acc1 with 10 ether as collateral.
     //the assert checks if the CDS was successfully created by checking for equality between acc1 and the first data point of getInfo ( the maker) for cds with ID 0.
 
     //FYI: for view functions (functions that return data and dont change the state of the blockchain)
@@ -17,6 +19,8 @@ contract('Testing CDPCDS', async (accounts) => {
     //USE AFTER DATA CALL TO PRINT DATA
     //console.log("Maker:           "+data[0]+"\n"+"MakerCollateral: "+data[1]+"\n"+"Taker:           "+data[2]+"\n"+"TakerCollateral: "+data[3]+"\n"+"Premium:         "+data[4]+"\n"+"Payed:           "+data[5]+"\n"+"ContractBalance: "+data[6]+"\n");
     //USE AFTER DATA CALL TO PRINT DATA
+
+    //reminder: this is javascript so we can get very creative with our tests. loops, external file logs, dynamic variables you name it. 
 
     it("Should deploy new conract and create CDP", async () => {
         instance = await cdpcds.deployed();
