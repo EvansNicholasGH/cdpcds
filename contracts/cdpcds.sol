@@ -1,4 +1,3 @@
-// solium-disable linebreak-style
 pragma solidity ^0.4.24;
 
 import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -41,32 +40,9 @@ contract cdpcds {
         collateralBalances[msg.sender] = collateralBalances[msg.sender].add(msg.value);
     }
     //HELPER SHOW INFO FUNCTION::
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-<<<<<<< HEAD
     function getInfo(uint _ID) public view returns (address, uint, address, uint, uint, uint, uint){
         return(allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].taker, allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
-    }
-    //for testing...
-    function getCollateralBalance(address _addr)public view returns(uint){
-        return collateralBalances[_addr];
-=======
-    function getInfo(uint _ID) public view returns (string, uint, uint, uint, uint, uint){
-        return("mkrCol,tkrCol,premium, paid, status",allCDSs[_ID].makerCollateral,allCDSs[_ID].takerCollateral,allCDSs[_ID].premium, allCDSs[_ID].payed,allCDSs[_ID].status);
-    }
-    
-    function getMkrTkr(uint _ID) public view returns (address,address){
-        return(allCDSs[_ID].maker,allCDSs[_ID].taker);
->>>>>>> 44ef0ba26072b42aba2af2ce73b20b89699b7d9f
-=======
-    
-=======
-
->>>>>>> 928182a08b433068a3ccfb42e660434f53ac4258
-    function getInfo(uint _ID) public view returns (address, uint, address, uint, uint, uint, uint){
-        return(allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].taker, allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
->>>>>>> b184f85796c96ebc278246322f49e493010cef4f
     }
     //for testing...
     function getCollateralBalance(address _addr)public view returns(uint){
@@ -198,17 +174,7 @@ contract cdpcds {
         require(_to == allCDSs[_ID].taker);
         allCDSs[_ID].takerCollateral.add(msg.value);
     } */
-<<<<<<< HEAD
-<<<<<<< HEAD
 
     //TODO: finish Collateral balance tracking for testing (removed or added where apropreate)
 
 }
-=======
-=======
-
-    //TODO: finish Collateral balance tracking for testing (removed or added where apropreate)
-
->>>>>>> 928182a08b433068a3ccfb42e660434f53ac4258
-}
->>>>>>> b184f85796c96ebc278246322f49e493010cef4f
