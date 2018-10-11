@@ -35,7 +35,7 @@ contract cdpcds {
     function makeCDSOrder(uint _premium)public payable {
         require(msg.value >= 1e15);
         uint collateral = msg.value;
-        allCDSs[currentID] = CDS(msg.sender, 0x0, collateral, 0, _premium, 0, currentID, 0, 0, 0, 7 days,now.add(28 days),2773);
+        allCDSs[currentID] = CDS(msg.sender, 0x0, collateral, 0, _premium, 0, currentID, 0, 0, 0, 7 days,now.add(35 days),2773);
         currentID = currentID.add(1);
     }
     //HELPER SHOW INFO FUNCTION::
@@ -108,14 +108,13 @@ contract cdpcds {
         uint collateral = allCDSs[_ID].takerCollateral;
 
         if(owed==0) return(false);
-        if(owed > collateral){            
-            allCDSs[_ID].takerCollateral = 0;
-            if(collateral>0) allCDSs[_ID].maker.transfer(collateral);
+        if(owed > collateral){
             allCDSs[_ID].status=2;
-            uint makerPayout = (allCDSs[_ID].makerCollateral).add(allCDSs[_ID].takerCollateral);
             allCDSs[_ID].takerCollateral = 0;
+            uint makerPayout = (allCDSs[_ID].makerCollateral).add(collateral);
             allCDSs[_ID].makerCollateral = 0;
             allCDSs[_ID].maker.transfer(makerPayout);
+            allCDSs[_ID].payed = allCDSs[_ID].payed.add(makerPayout);
             return(true);			             
         }
         if(owed <= collateral){//Fix Later
