@@ -226,22 +226,30 @@ contract('Testing CDPCDS', async (accounts) => {
 })   
     
 
-//test1
-
+//test1a
 //deploy from a0
-//makeCDSOrder(1000000000000000000,{val:10000000000000000000,from:a1})
-//fillCDSOrder(0,1539068400,{val:3000000000000000000,from:a2})
-//requestPremium(0,1539154800)  1
-//requestPremium(0,1539327600)  2
-//requestPremium(0,1539586800)  3
-//requestPremium(0,1539759600)  4
-//requestPremium(0,1540278000)  5
-//requestPremium(0,1540882800)  6
-//requestPremium(0,1541487600)  7
+//makeCDSOrder(1000000000000000000,{val:10000000000000000000,from:a1}) --> mkr b,c (-1e19,1e19) | tkr b,c (0,0)
+// --> status: 0
+//fillCDSOrder(0,1539068400,{val:3000000000000000000,from:a2}) --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
+// --> status: 1
+//requestPremium(0,1539154800)  1 --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
+//requestPremium(0,1539327600)  3 --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
+//requestPremium(0,1539586800)  6 --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
+//requestPremium(0,1539759600)  8 --> mkr b,c (-9e18,1e19) | tkr b,c (-3e18,2e18)
+//requestPremium(0,1540278000)  14 --> mkr b,c (-8e18,1e19) | tkr b,c (-3e18,1e18)
+//requestPremium(0,1540882800)  23 --> mkr b,c (-8e18,1e19) | tkr b,c (-3e18,1e18)
+//requestPremium(0,1541487600)  28 --> mkr b,c (-8e18,1e19) | tkr b,c (-3e18,0e18) --> mkr b,c (1.8e19,0) | tkr b,c (-3e18,0e18)
+// --> status: 2
+//test1b
 //makeCDSOrder(1000000000000000000,{val:10000000000000000000,from:a3})
+// --> status: 0
 //fillCDSOrder(1,1539068400,{val:3000000000000000000,from:a4})
+// --> status: 0
+// --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
 //requestPremium(1,1539759600)
+// --> mkr b,c (-9e18,1e19) | tkr b,c (-3e18,2e18)
 //close(1,1539759600,{from:a3})
+// --> mkr b,c (-3e17,0) | tkr b,c (3e17,0)
 
 //test2
 
