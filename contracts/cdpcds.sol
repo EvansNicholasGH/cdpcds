@@ -41,8 +41,11 @@ contract cdpcds {
     }
     //HELPER SHOW INFO FUNCTION::
 
-    function getInfo(uint _ID) public view returns (address, uint, address, uint, uint, uint, uint){
-        return(allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].taker, allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
+    function getInfo(uint _ID) public view returns (address, uint, address, uint, uint, uint,uint){
+        return(allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].taker, allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, allCDSs[_ID].status);
+    }
+    function getContractBalance() public view returns (uint){
+        return cont.balance;
     }
     //for testing...
     function getCollateralBalance(address _addr)public view returns(uint){

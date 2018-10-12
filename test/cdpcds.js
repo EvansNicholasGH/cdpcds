@@ -5,6 +5,13 @@ let a0, a1, a2, a3, a4;//account variables also global
 //all testing is done here
 //TEST 1
 contract('Testing CDPCDS', async (accounts) => {
+    //Define Contract Globals:a0 =  accounts[0];
+        a1 = accounts[1];
+        a2 = accounts[2];
+        a3 = accounts[3];
+        a4 = accounts[4];
+        let initialBalance = web3.eth.getBalance(a2).toNumber();
+        let finalBalance;
 
     //README:
 
@@ -23,207 +30,181 @@ contract('Testing CDPCDS', async (accounts) => {
     //reminder: this is javascript so we can get very creative with our tests. loops, external file logs, dynamic variables you name it. 
 
     it("Should deploy new conract and create CDP", async () => {
-        instance = await cdpcds.deployed();
-        a0 =  accounts[0];
-        a1 = accounts[1];
-        a2 = accounts[2];
-        a3 = accounts[3];
-        a3 = accounts[4];
+        instance = await cdpcds.deployed();        
         await instance.makeCDSOrder(1000000000000000000,{from: a1, value: 10000000000000000000});
-        let data;
-        let strcheck;
-        data = await instance.getInfo.call(0);
+        let data = await instance.getInfo.call(0);
         assert.equal(a1,data[0]);
+        assert.equal(0,data[6].toNumber());      
    
     });
-
+// return(allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].taker, allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
     //fills the CPD, you know how it goes now. pretty simple
     it("Should fill CDP", async () => { 
-        let data;
-        let strcheck;
-        await instance.fillCDSOrder(0,1539068400,{value:3000000000000000000,from: a2});
-        data = await instance.getInfo.call(0);  
+        let transactionInfo = await instance.fillCDSOrder(0,1539068400,{value:3000000000000000000,from: a2});
+        finalBalance = web3.eth.getBalance(a2).toNumber();
+        let tx = await web3.eth.getTransaction(transactionInfo.tx);
+        let spentOnTransaction = tx.gasPrice.mul(transactionInfo.receipt.gasUsed)              
+        let data = await instance.getInfo.call(0); 
+        assert.equal(finalBalance,initialBalance-3e18-spentOnTransaction); 
         assert.equal(a2,data[2]);
+        assert.equal(1,data[6].toNumber());
     });
-    it("correct balance after requesting premium  #1", async () => { 
-        let data;
-        let strcheck;
-        await instance.requestPremium(0,1539154800);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
+    it("correct balance after requesting premium  #1", async () => {         
+        await instance.requestPremium(0,1539154800);           
+        data = await instance.getInfo.call(0); 
+        assert.equal(data[3].toNumber(),3e18);
+        assert.equal(finalBalance,web3.eth.getBalance(a2).toNumber());
     });
     it("correct balance after requesting premium #2", async () => { 
-        let data;
-        let strcheck;
         await instance.requestPremium(0,1539327600);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
+        let data = await instance.getInfo.call(0);          
+        assert.equal(data[3].toNumber(),3e18);
     });
     it("correct balance after requesting premium #3", async () => { 
-        let data;
-        let strcheck;
         await instance.requestPremium(0,1539586800);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
+        data = await instance.getInfo.call(0);       
+        assert.equal(data[3].toNumber(),3e18);
     });
     it("correct balance after requesting premium #4", async () => { 
-        let data;
-        let strcheck;
         await instance.requestPremium(0,1539759600);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
+        data = await instance.getInfo.call(0);       
+        assert.equal(data[3].toNumber(),2e18);
     });
     it("correct balance after requesting premium #5", async () => { 
-        let data;
-        let strcheck;
         await instance.requestPremium(0,1540278000);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
+        data = await instance.getInfo.call(0);          
+        assert.equal(data[3].toNumber(),1e18);
     });
     it("correct balance after requesting premium #6", async () => { 
-        let data;
-        let strcheck;
         await instance.requestPremium(0,1540882800);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
+        data = await instance.getInfo.call(0);          
+        assert.equal(data[3].toNumber(),1e18);
     });
     it("correct balance after requesting premium #7", async () => { 
-        let data;
-        let strcheck;
         await instance.requestPremium(0,1541487600);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
+        data = await instance.getInfo.call(0);          
+        assert.equal(data[3].toNumber(),"0");
+        assert.equal(2,data[6].toNumber());
     });
-    it("Should create new CDP", async () => {
+    it("Should create new CDSorder", async () => {
         instance = await cdpcds.deployed();
         await instance.makeCDSOrder(1000000000000000000,{from: a3, value: 10000000000000000000});
-        let data;
-        let strcheck;
         data = await instance.getInfo.call(1);
-        assert.equal(a3,data[0]);       
+        assert.equal(a3,data[0]);
+        assert.equal(0,data[6].toNumber());       
     });
-    it("Should fill CDP", async () => { 
-        let data;
-        let strcheck;
+    it("Should fill CDSorder", async () => { 
         await instance.fillCDSOrder(1,1539068400,{value:3000000000000000000,from: a4});
         data = await instance.getInfo.call(1);  
         assert.equal(a4,data[2]);
+        assert.equal(1,data[6].toNumber());
         });
-    it("correct balance after requesting premium  #1", async () => { 
-        let data;
-        let strcheck;
+    it("correct balance after requesting premium  #8", async () => { 
         await instance.requestPremium(1,1539759600);    
         data = await instance.getInfo.call(1);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
+        assert.equal(data[3].toNumber(),"2000000000000000000");
+        assert.equal(finalBalance,web3.eth.getBalance(a2).toNumber());
     });
 })
 //TEST 2
 //deploy new contract.
-contract('Testing CDPCDS', async (accounts) => {
-    it("Should deploy new conract and create CDP", async () => {
-        instance = await cdpcds.deployed();
-        await instance.makeCDSOrder(1000000000000000000,{from: a1, value: 10000000000000000000});
-        let data;
-        let strcheck;
-        data = await instance.getInfo.call(0);
-        assert.equal(a1,data[0]);
+// contract('Testing CDPCDS', async (accounts) => {
+//     it("Should deploy new conract and create CDP", async () => {
+//         instance = await cdpcds.deployed();
+//         await instance.makeCDSOrder(1000000000000000000,{from: a1, value: 10000000000000000000});
+//         let data;
+//         let strcheck;
+//         data = await instance.getInfo.call(0);
+//         assert.equal(a1,data[0]);
    
-    });
-    it("Should fill CDP", async () => { 
-        let data;
-        let strcheck;
-        await instance.fillCDSOrder(0,1539068400,{value:3000000000000000000,from: a2});
-        data = await instance.getInfo.call(0);  
-        assert.equal(a2,data[2]);
-    });
-    it("correct close outcome", async () => { 
-        let data;
-        let strcheck;
-        await instance.close(0,1539759600);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"no");
-    });
-})
+//     });
+//     it("Should fill CDSOrder", async () => { 
+//         let data;
+//         let strcheck;
+//         await instance.fillCDSOrder(0,1539068400,{value:3000000000000000000,from: a2});
+//         data = await instance.getInfo.call(0);  
+//         assert.equal(a2,data[2]);
+//     });
+//     it("correct close outcome", async () => { 
+//         let data;
+//         let strcheck;
+//         await instance.close(0,1539759600);    
+//         data = await instance.getInfo.call(0);  
+//         strcheck = ""+data[3];
+//         assert.equal(strcheck,"no");
+//     });
+// })
     //TEST 3
     //new contract
-contract('Testing CDPCDS', async (accounts) => {
-    it("Should deploy new conract and create CDP", async () => {
-        instance = await cdpcds.deployed();
-        await instance.makeCDSOrder(1000000000000000000,{from: a1, value: 10000000000000000000});
-        let data;
-        let strcheck;
-        data = await instance.getInfo.call(0);
-        assert.equal(a1,data[0]);       
-    });
-    it("Should fill CDP", async () => { 
-        let data;
-        let strcheck;
-        await instance.fillCDSOrder(0,1539068400,{value:3000000000000000000,from: a2});
-        data = await instance.getInfo.call(0);  
-        assert.equal(a2,data[2]);
-        });
-    it("correct balance after requesting premium  #1", async () => { 
-        let data;
-        let strcheck;
-        await instance.requestPremium(0,1539759600);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
-    });
-    it("correct close outcome", async () => { 
-        let data;
-        let strcheck;
-        await instance.close(0,1541487600);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"no");
-    });
-})
+// contract('Testing CDPCDS', async (accounts) => {
+//     it("Should deploy new conract and create CDP", async () => {
+//         instance = await cdpcds.deployed();
+//         await instance.makeCDSOrder(1000000000000000000,{from: a1, value: 10000000000000000000});
+//         let data;
+//         let strcheck;
+//         data = await instance.getInfo.call(0);
+//         assert.equal(a1,data[0]);       
+//     });
+//     it("Should fill CDP", async () => { 
+//         let data;
+//         let strcheck;
+//         await instance.fillCDSOrder(0,1539068400,{value:3000000000000000000,from: a2});
+//         data = await instance.getInfo.call(0);  
+//         assert.equal(a2,data[2]);
+//         });
+//     it("correct balance after requesting premium  #1", async () => { 
+//         let data;
+//         let strcheck;
+//         await instance.requestPremium(0,1539759600);    
+//         data = await instance.getInfo.call(0);  
+//         strcheck = ""+data[3];
+//         assert.equal(strcheck,"2000000000000000000");
+//     });
+//     it("correct close outcome", async () => { 
+//         let data;
+//         let strcheck;
+//         await instance.close(0,1541487600);    
+//         data = await instance.getInfo.call(0);  
+//         strcheck = ""+data[3];
+//         assert.equal(strcheck,"no");
+//     });
+// })
 
     //TEST 4
     //new contract
-contract('Testing CDPCDS', async (accounts) => {
-    it("Should deploy new conract and create CDP", async () => {
-        instance = await cdpcds.deployed();
-        await instance.makeCDSOrder(1000000000000000000,{from: a1, value: 10000000000000000000});
-        let data;
-        let strcheck;
-        data = await instance.getInfo.call(0);
-        assert.equal(a1,data[0]);       
-    });
-    it("Should fill CDP", async () => { 
-        let data;
-        let strcheck;
-        await instance.fillCDSOrder(0,1539068400,{value:3000000000000000000,from: a2});
-        data = await instance.getInfo.call(0);  
-        assert.equal(a2,data[2]);
-        });
-    it("correct balance after requesting premium  #1", async () => { 
-        let data;
-        let strcheck;
-        await instance.requestPremium(0,1539759600);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"2000000000000000000");
-    });
-    it("correct close outcome", async () => { 
-        let data;
-        let strcheck;
-        await instance.close(0,1541487600);    
-        data = await instance.getInfo.call(0);  
-        strcheck = ""+data[3];
-        assert.equal(strcheck,"no");
-    });
-})   
+// contract('Testing CDPCDS', async (accounts) => {
+//     it("Should deploy new conract and create CDP", async () => {
+//         instance = await cdpcds.deployed();
+//         await instance.makeCDSOrder(1000000000000000000,{from: a1, value: 10000000000000000000});
+//         let data;
+//         let strcheck;
+//         data = await instance.getInfo.call(0);
+//         assert.equal(a1,data[0]);       
+//     });
+//     it("Should fill CDP", async () => { 
+//         let data;
+//         let strcheck;
+//         await instance.fillCDSOrder(0,1539068400,{value:3000000000000000000,from: a2});
+//         data = await instance.getInfo.call(0);  
+//         assert.equal(a2,data[2]);
+//         });
+//     it("correct balance after requesting premium  #1", async () => { 
+//         let data;
+//         let strcheck;
+//         await instance.requestPremium(0,1539759600);    
+//         data = await instance.getInfo.call(0);  
+//         strcheck = ""+data[3];
+//         assert.equal(strcheck,"2000000000000000000");
+//     });
+//     it("correct close outcome", async () => { 
+//         let data;
+//         let strcheck;
+//         await instance.close(0,1541487600);    
+//         data = await instance.getInfo.call(0);  
+//         strcheck = ""+data[3];
+//         assert.equal(strcheck,"no");
+//     });
+// })   
     
 
 //test1a
@@ -244,7 +225,7 @@ contract('Testing CDPCDS', async (accounts) => {
 //makeCDSOrder(1000000000000000000,{val:10000000000000000000,from:a3})
 // --> status: 0
 //fillCDSOrder(1,1539068400,{val:3000000000000000000,from:a4})
-// --> status: 0
+// --> status: 1
 // --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
 //requestPremium(1,1539759600)
 // --> mkr b,c (-9e18,1e19) | tkr b,c (-3e18,2e18)
