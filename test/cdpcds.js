@@ -31,7 +31,7 @@ contract('Testing CDPCDS', async (accounts) => {
 
     it("Should deploy new conract and create CDP", async () => {
         instance = await cdpcds.deployed();        
-        await instance.makeCDSOrder(1000000000000000000,{from: a1, value: 10000000000000000000});
+        await instance.makeCDSOrder(1000000000000000000,{from: a1, value: 1e19});
         let data = await instance.getInfo.call(0);
         assert.equal(a1,data[0]);
         assert.equal(0,data[6].toNumber());      
@@ -40,7 +40,7 @@ contract('Testing CDPCDS', async (accounts) => {
 // return(allCDSs[_ID].maker, allCDSs[_ID].makerCollateral, allCDSs[_ID].taker, allCDSs[_ID].takerCollateral, allCDSs[_ID].premium, allCDSs[_ID].payed, cont.balance);
     //fills the CPD, you know how it goes now. pretty simple
     it("Should fill CDP", async () => { 
-        let transactionInfo = await instance.fillCDSOrder(0,1539068400,{value:3000000000000000000,from: a2});
+        let transactionInfo = await instance.fillCDSOrder(0,1539068400,{value:3e18,from: a2});
         finalBalance = web3.eth.getBalance(a2).toNumber();
         let tx = await web3.eth.getTransaction(transactionInfo.tx);
         let spentOnTransaction = tx.gasPrice.mul(transactionInfo.receipt.gasUsed)              
@@ -88,13 +88,13 @@ contract('Testing CDPCDS', async (accounts) => {
     });
     it("Should create new CDSorder", async () => {
         instance = await cdpcds.deployed();
-        await instance.makeCDSOrder(1000000000000000000,{from: a3, value: 10000000000000000000});
+        await instance.makeCDSOrder(1e18,{from: a3, value: 1e19});
         data = await instance.getInfo.call(1);
         assert.equal(a3,data[0]);
         assert.equal(0,data[6].toNumber());       
     });
     it("Should fill CDSorder", async () => { 
-        await instance.fillCDSOrder(1,1539068400,{value:3000000000000000000,from: a4});
+        await instance.fillCDSOrder(1,1539068400,{value:3e18,from: a4});
         data = await instance.getInfo.call(1);  
         assert.equal(a4,data[2]);
         assert.equal(1,data[6].toNumber());
@@ -102,7 +102,7 @@ contract('Testing CDPCDS', async (accounts) => {
     it("correct balance after requesting premium  #8", async () => { 
         await instance.requestPremium(1,1539759600);    
         data = await instance.getInfo.call(1);  
-        assert.equal(data[3].toNumber(),"2000000000000000000");
+        assert.equal(data[3].toNumber(),2e18);
         assert.equal(finalBalance,web3.eth.getBalance(a2).toNumber());
     });
 })
@@ -213,12 +213,12 @@ contract('Testing CDPCDS', async (accounts) => {
 // --> status: 0
 //fillCDSOrder(0,1539068400,{val:3000000000000000000,from:a2}) --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
 // --> status: 1
-//requestPremium(0,1539154800)  1 --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
-//requestPremium(0,1539327600)  3 --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
-//requestPremium(0,1539586800)  6 --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
-//requestPremium(0,1539759600)  8 --> mkr b,c (-9e18,1e19) | tkr b,c (-3e18,2e18)
-//requestPremium(0,1540278000)  14 --> mkr b,c (-8e18,1e19) | tkr b,c (-3e18,1e18)
-//requestPremium(0,1540882800)  23 --> mkr b,c (-8e18,1e19) | tkr b,c (-3e18,1e18)
+//requestPremium(0,1539154800)  1 --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)?
+//requestPremium(0,1539327600)  3 --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)?
+//requestPremium(0,1539586800)  6 --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)?
+//requestPremium(0,1539759600)  8 --> mkr b,c (-9e18,1e19) | tkr b,c (-3e18,2e18)?
+//requestPremium(0,1540278000)  14 --> mkr b,c (-8e18,1e19) | tkr b,c (-3e18,1e18)?
+//requestPremium(0,1540882800)  23 --> mkr b,c (-8e18,1e19) | tkr b,c (-3e18,1e18)?
 //requestPremium(0,1541487600)  28 --> mkr b,c (-8e18,1e19) | tkr b,c (-3e18,0e18) --> mkr b,c (1.8e19,0) | tkr b,c (-3e18,0e18)
 // --> status: 2
 //test1b
@@ -228,7 +228,7 @@ contract('Testing CDPCDS', async (accounts) => {
 // --> status: 1
 // --> mkr b,c (-1e19,1e19) | tkr b,c (-3e18,3e18)
 //requestPremium(1,1539759600)
-// --> mkr b,c (-9e18,1e19) | tkr b,c (-3e18,2e18)
+// --> mkr b,c (-9e18,1e19) | tkr b,c (-3e18,2e18) ???---|
 //close(1,1539759600,{from:a3})
 // --> mkr b,c (-3e17,0) | tkr b,c (3e17,0)
 
